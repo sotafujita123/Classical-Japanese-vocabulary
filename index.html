@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>古文単語300＋</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        "Yu Gothic",
+        YuGothic,
+        sans-serif;
+    background: #f5f6f8;
+    color: #222;
+}
+
+/* =========================
+   ヘッダー
+========================= */
+
+header {
+    height: 64px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.menu-button {
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* =========================
+   サイドメニュー
+========================= */
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: -290px;
+    width: 290px;
+    height: 100%;
+    background: white;
+    z-index: 300;
+    padding: 25px 18px;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.15);
+    transition: left 0.25s;
+}
+
+.menu.open {
+    left: 0;
+}
+
+.menu h2 {
+    margin-top: 10px;
+}
+
+.menu-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    border: none;
+    background: #eee;
+    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border: none;
+    background: white;
+    text-align: left;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: #eef1ff;
+    color: #4054d6;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    z-index: 200;
+}
+
+.overlay.show {
+    display: block;
+}
+
+/* =========================
+   ページ
+========================= */
+
+.container {
+    max-width: 760px;
+    margin: auto;
+    padding: 25px 18px 50px;
+}
+
+.page-title {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+/* =========================
+   勉強カード
+========================= */
+
+.word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.word-card {
+    position: relative;
+    min-height: 110px;
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #ddd;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    padding: 25px;
+
+    transition: 0.15s;
+}
+
+.word-card:active {
+    transform: scale(0.98);
+}
+
+.word-number {
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    font-size: 12px;
+    color: #999;
+}
+
+.word-front {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.word-back {
+    display: none;
+    font-size: 19px;
+    font-weight: bold;
+    color: #4054d6;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.word-card.flipped .word-front {
+    display: none;
+}
+
+.word-card.flipped .word-back {
+    display: block;
+}
+
+/* =========================
+   テスト
+========================= */
+
+.test-box {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.progress {
+    height: 8px;
+    background: #eee;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #4054d6;
+    transition: width 0.3s;
+}
+
+.question-number {
+    color: #777;
+    font-size: 14px;
+}
+
+.question {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.6;
+    margin: 20px 0;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.answer {
+    min-height: 65px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.answer:hover:not(:disabled) {
+    background: #f5f6ff;
+    border-color: #8290ee;
+}
+
+.answer.correct {
+    background: #d8f7df;
+    border-color: #21a344;
+    color: #14752d;
+}
+
+.answer.wrong {
+    background: #ffdede;
+    border-color: #e33131;
+    color: #a50000;
+}
+
+.answer:disabled {
+    cursor: default;
+}
+
+.feedback {
+    min-height: 30px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.feedback.correct-text {
+    color: #159238;
+}
+
+.feedback.wrong-text {
+    color: #d00000;
+}
+
+.test-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.next-button,
+.stop-button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.next-button {
+    background: #4054d6;
+    color: white;
+}
+
+.next-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.stop-button {
+    background: #eee;
+}
+
+/* =========================
+   結果
+========================= */
+
+.result {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+}
+
+.score {
+    font-size: 48px;
+    font-weight: bold;
+    color: #4054d6;
+    margin: 20px;
+}
+
+.result-button {
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    background: #4054d6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* =========================
+   間違えた問題
+========================= */
+
+.mistake-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mistake-card {
+    background: white;
+    border-radius: 15px;
+    padding: 17px;
+    border-left: 5px solid #e33131;
+}
+
+.mistake-word {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mistake-meaning {
+    margin-top: 7px;
+    color: #777;
+}
+
+.clear-button {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #eee;
+    cursor: pointer;
+}
+
+/* =========================
+   共通
+========================= */
+
+.hidden {
+    display: none !important;
+}
+
+@media(max-width:600px) {
+
+    .answers {
+        grid-template-columns: 1fr;
+    }
+
+    .word-front {
+        font-size: 25px;
+    }
+
+    .question {
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     ヘッダー
+========================= -->
+
+<header>
+
+    <button class="menu-button" id="menuButton">
+        ☰
+    </button>
+
+    <div class="header-title" id="headerTitle">
+        古文単語
+    </div>
+
+</header>
+
+
+<!-- =========================
+     サイドメニュー
+========================= -->
+
+<div class="menu" id="menu">
+
+    <button class="menu-close" id="menuClose">
+        ×
+    </button>
+
+    <h2>ページ選択</h2>
+
+    <button class="menu-item active" data-page="study">
+        📚 勉強用
+    </button>
+
+    <button class="menu-item" data-page="test">
+        ✏️ テスト
+    </button>
+
+    <button class="menu-item" data-page="mistakes">
+        ❌ 間違えた問題
+    </button>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+
+<!-- =========================
+     メイン
+========================= -->
+
+<main class="container">
+
+    <!-- 勉強 -->
+    <section id="studyPage">
+
+        <h1 class="page-title">
+            勉強用
+        </h1>
+
+        <p class="description">
+            単語をタップすると日本語訳が表示されます。
+        </p>
+
+        <div class="word-list" id="wordList"></div>
+
+    </section>
+
+
+    <!-- テスト -->
+    <section id="testPage" class="hidden">
+
+        <h1 class="page-title">
+            テスト
+        </h1>
+
+        <p class="description">
+            表示された意味に合う古文単語を選んでください。
+        </p>
+
+        <div id="testArea"></div>
+
+    </section>
+
+
+    <!-- 間違えた問題 -->
+    <section id="mistakesPage" class="hidden">
+
+        <h1 class="page-title">
+            間違えた問題
+        </h1>
+
+        <p class="description">
+            テストで間違えた問題がここに表示されます。
+        </p>
+
+        <div id="mistakesArea"></div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+/* =====================================
+   単語データ
+===================================== */
+
+const words = [
+
+    {
+        no: 107,
+        word: "すずろなり",
+        meaning: "あてもない・思いがけない・むやみだ"
+    },
+
+    {
+        no: 112,
+        word: "おぼえ",
+        meaning: "評判・寵愛を受けること"
+    },
+
+    {
+        no: 121,
+        word: "よし",
+        meaning: "縁・方法・風情・事情・旨・そぶり"
+    },
+
+    {
+        no: 125,
+        word: "ざえ",
+        meaning: "学問"
+    },
+
+    {
+        no: 129,
+        word: "いつしか",
+        meaning: "早く～したい・早くも"
+    },
+
+    {
+        no: 132,
+        word: "かく",
+        meaning: "このように"
+    },
+
+    {
+        no: 133,
+        word: "とかく",
+        meaning: "あれこれと"
+    },
+
+    {
+        no: 134,
+        word: "しか",
+        meaning: "そのように"
+    },
+
+    {
+        no: 135,
+        word: "さ",
+        meaning: "そう"
+    },
+
+    {
+        no: 136,
+        word: "さばかり",
+        meaning: "その程度・非常に"
+    },
+
+    {
+        no: 137,
+        word: "さながら",
+        meaning: "そのまま・全部"
+    },
+
+    {
+        no: 138,
+        word: "つゆ～打消",
+        meaning: "少しも～ない"
+    },
+
+    {
+        no: 139,
+        word: "よも～じ",
+        meaning: "まさか～ないだろう"
+    },
+
+    {
+        no: 140,
+        word: "なかなか",
+        meaning: "かえって"
+    },
+
+    {
+        no: 141,
+        word: "さすがに",
+        meaning: "そうはいってもやはり"
+    },
+
+    {
+        no: 142,
+        word: "かつ",
+        meaning: "一方では・すぐに"
+    },
+
+    {
+        no: 143,
+        word: "など・などか",
+        meaning: "どうして・どうして～か、いやない"
+    },
+
+    {
+        no: 144,
+        word: "なでふ・なんでふ",
+        meaning: "どうして・どうして～か、いやない"
+    },
+
+    {
+        no: 145,
+        word: "ありし・ありつる",
+        meaning: "かつての・さっきの"
+    },
+
+    {
+        no: 146,
+        word: "れいの",
+        meaning: "いつものようにして・いつもの"
+    },
+
+    {
+        no: 147,
+        word: "おとにきく",
+        meaning: "うわさに聞く・評判が高い"
+    },
+
+    {
+        no: 148,
+        word: "いかがせむ・いかがはせむ",
+        meaning: "どうしようか・どうしようもない"
+    },
+
+    {
+        no: 149,
+        word: "さるべき",
+        meaning: "適当な・そうなるはずの・立派な"
+    },
+
+    {
+        no: 150,
+        word: "いざたまへ",
+        meaning: "さあ、いらっしゃい"
+    },
+
+    {
+        no: 151,
+        word: "あくがる",
+        meaning: "さまよい出る・宙にさまよう・うわの空になる"
+    },
+
+    {
+        no: 152,
+        word: "したたむ",
+        meaning: "処理する・用意する・取り締まる"
+    },
+
+    {
+        no: 153,
+        word: "しる",
+        meaning: "領有する"
+    },
+
+    {
+        no: 154,
+        word: "しのぶ",
+        meaning: "我慢する・人目を避ける・思い慕う"
+    },
+
+    {
+        no: 155,
+        word: "やすらふ",
+        meaning: "立ち止まる・とどまる・ためらう"
+    },
+
+    {
+        no: 156,
+        word: "うちいづ",
+        meaning: "口に出して言う"
+    }
+
+];
+
+
+/* =====================================
+   基本設定
+===================================== */
+
+const wordList = document.getElementById("wordList");
+const testArea = document.getElementById("testArea");
+const mistakesArea = document.getElementById("mistakesArea");
+
+let quiz = null;
+
+
+/* =====================================
+   勉強ページ
+===================================== */
+
+function createStudyCards() {
+
+    wordList.innerHTML = "";
+
+    words.forEach(word => {
+
+        const card = document.createElement("div");
+
+        card.className = "word-card";
+
+        card.innerHTML = `
+            <div class="word-number">
+                No.${word.no}
+            </div>
+
+            <div class="word-front">
+                ${word.word}
+            </div>
+
+            <div class="word-back">
+                ${word.meaning}
+            </div>
+        `;
+
+        card.addEventListener("click", () => {
+
+            card.classList.toggle("flipped");
+
+        });
+
+        wordList.appendChild(card);
+
+    });
+
+}
+
+
+/* =====================================
+   間違えた問題
+===================================== */
+
+function getMistakes() {
+
+    return JSON.parse(
+        localStorage.getItem("kobun-mistakes") || "[]"
+    );
+
+}
+
+
+function saveMistakes(mistakes) {
+
+    localStorage.setItem(
+        "kobun-mistakes",
+        JSON.stringify(mistakes)
+    );
+
+}
+
+
+function addMistake(no) {
+
+    const mistakes = getMistakes();
+
+    if (!mistakes.includes(no)) {
+
+        mistakes.push(no);
+
+        saveMistakes(mistakes);
+
+    }
+
+}
+
+
+function showMistakes() {
+
+    const mistakes = getMistakes();
+
+    if (mistakes.length === 0) {
+
+        mistakesArea.innerHTML = `
+            <div class="result">
+                <h3>まだ間違えた問題はありません。</h3>
+
+                <p>
+                    テストで間違えた問題がここに表示されます。
+                </p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    mistakesArea.innerHTML = `
+        <div class="mistake-list">
+
+            ${mistakes.map(no => {
+
+                const word = words.find(
+                    item => item.no === no
+                );
+
+                return `
+                    <div class="mistake-card">
+
+                        <div class="mistake-word">
+                            No.${word.no}　${word.word}
+                        </div>
+
+                        <div class="mistake-meaning">
+                            ${word.meaning}
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("")}
+
+        </div>
+
+        <button class="clear-button" id="clearMistakes">
+            間違えた問題をすべて消去
+        </button>
+    `;
+
+
+    document
+        .getElementById("clearMistakes")
+        .addEventListener("click", () => {
+
+            localStorage.removeItem("kobun-mistakes");
+
+            showMistakes();
+
+        });
+
+}
+
+
+/* =====================================
+   テスト開始
+===================================== */
+
+function startQuiz() {
+
+    const shuffledWords = [...words]
+        .sort(() => Math.random() - 0.5);
+
+    quiz = {
+
+        questions: shuffledWords,
+
+        current: 0,
+
+        score: 0,
+
+        answered: false
+
+    };
+
+    showQuestion();
+
+}
+
+
+/* =====================================
+   問題表示
+===================================== */
+
+function showQuestion() {
+
+    const question = quiz.questions[quiz.current];
+
+    if (!question) {
+
+        showResult();
+
+        return;
+
+    }
+
+
+    quiz.answered = false;
+
+
+    /* 4択を作る */
+
+    const wrongAnswers = words
+        .filter(word => word.no !== question.no)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+
+
+    const choices = [
+        question,
+        ...wrongAnswers
+    ].sort(() => Math.random() - 0.5);
+
+
+    testArea.innerHTML = `
+
+        <div class="test-box">
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    style="
+                        width:
+                        ${(quiz.current / quiz.questions.length) * 100}%
+                    "
+                ></div>
+
+            </div>
+
+
+            <div class="question-number">
+
+                ${quiz.current + 1}
+                /
+                ${quiz.questions.length}
+
+            </div>
+
+
+            <div class="question">
+
+                「${question.meaning}」
+
+            </div>
+
+
+            <div class="answers">
+
+                ${choices.map(choice => `
+
+                    <button
+                        class="answer"
+                        data-no="${choice.no}"
+                    >
+                        ${choice.word}
+                    </button>
+
+                `).join("")}
+
+            </div>
+
+
+            <div
+                class="feedback"
+                id="feedback"
+            ></div>
+
+
+            <div class="test-buttons">
+
+                <button
+                    class="stop-button"
+                    id="stopButton"
+                >
+                    途中で止める
+                </button>
+
+                <button
+                    class="next-button"
+                    id="nextButton"
+                    disabled
+                >
+                    次へ
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document
+        .querySelectorAll(".answer")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => checkAnswer(button, question)
+            );
+
+        });
+
+
+    document
+        .getElementById("nextButton")
+        .addEventListener("click", () => {
+
+            quiz.current++;
+
+            showQuestion();
+
+        });
+
+
+    document
+        .getElementById("stopButton")
+        .addEventListener("click", stopQuiz);
+
+}
+
+
+/* =====================================
+   正誤判定
+===================================== */
+
+function checkAnswer(button, question) {
+
+    if (quiz.answered) {
+        return;
+    }
+
+    quiz.answered = true;
+
+
+    const selectedNo =
+        Number(button.dataset.no);
+
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+
+    buttons.forEach(btn => {
+
+        btn.disabled = true;
+
+    });
+
+
+    const feedback =
+        document.getElementById("feedback");
+
+
+    /* 正解 */
+
+    if (selectedNo === question.no) {
+
+        button.classList.add("correct");
+
+        feedback.textContent =
+            "正解！";
+
+        feedback.classList.add(
+            "correct-text"
+        );
+
+        quiz.score++;
+
+    }
+
+    /* 不正解 */
+
+    else {
+
+        button.classList.add("wrong");
+
+
+        const correctButton =
+            [...buttons].find(
+                btn =>
+                    Number(btn.dataset.no)
+                    === question.no
+            );
+
+
+        if (correctButton) {
+
+            correctButton.classList.add(
+                "correct"
+            );
+
+        }
+
+
+        feedback.textContent =
+            `不正解。正解は「${question.word}」`;
+
+
+        feedback.classList.add(
+            "wrong-text"
+        );
+
+
+        addMistake(question.no);
+
+    }
+
+
+    document
+        .getElementById("nextButton")
+        .disabled = false;
+
+}
+
+
+/* =====================================
+   テスト途中終了
+===================================== */
+
+function stopQuiz() {
+
+    testArea.innerHTML = `
+
+        <div class="result">
+
+            <h2>
+                テストを終了しました
+            </h2>
+
+            <p>
+                間違えた問題は保存されています。
+            </p>
+
+            <button
+                class="result-button"
+                id="restartButton"
+            >
+                もう一度テストする
+            </button>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("restartButton")
+        .addEventListener(
+            "click",
+            startQuiz
+        );
+
+}
+
+
+/* =====================================
+   テスト結果
+===================================== */
+
+function showResult() {
+
+    testArea.innerHTML = `
+
+        <div class="result">
+
+            <h2>
+                テスト終了！
+            </h2>
+
+            <div class="score">
+
+                ${quiz.score}
+                /
+                ${quiz.questions.length}
+
+            </div>
+
+            <p>
+                ${
+                    quiz.questions.length
+                    - quiz.score
+                }
+                問間違えました。
+            </p>
+
+            <button
+                class="result-button"
+                id="againButton"
+            >
+                もう一度テストする
+            </button>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("againButton")
+        .addEventListener(
+            "click",
+            startQuiz
+        );
+
+}
+
+
+/* =====================================
+   ページ切り替え
+===================================== */
+
+function changePage(page) {
+
+    document
+        .getElementById("studyPage")
+        .classList.toggle(
+            "hidden",
+            page !== "study"
+        );
+
+
+    document
+        .getElementById("testPage")
+        .classList.toggle(
+            "hidden",
+            page !== "test"
+        );
+
+
+    document
+        .getElementById("mistakesPage")
+        .classList.toggle(
+            "hidden",
+            page !== "mistakes"
+        );
+
+
+    const titles = {
+
+        study: "古文単語",
+
+        test: "古文単語テスト",
+
+        mistakes: "間違えた問題"
+
+    };
+
+
+    document.getElementById(
+        "headerTitle"
+    ).textContent = titles[page];
+
+
+    document
+        .querySelectorAll(".menu-item")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.page === page
+            );
+
+        });
+
+
+    if (page === "test") {
+
+        startQuiz();
+
+    }
+
+
+    if (page === "mistakes") {
+
+        showMistakes();
+
+    }
+
+
+    closeMenu();
+
+}
+
+
+/* =====================================
+   メニュー
+===================================== */
+
+const menu =
+    document.getElementById("menu");
+
+const overlay =
+    document.getElementById("overlay");
+
+
+function openMenu() {
+
+    menu.classList.add("open");
+
+    overlay.classList.add("show");
+
+}
+
+
+function closeMenu() {
+
+    menu.classList.remove("open");
+
+    overlay.classList.remove("show");
+
+}
+
+
+document
+    .getElementById("menuButton")
+    .addEventListener(
+        "click",
+        openMenu
+    );
+
+
+document
+    .getElementById("menuClose")
+    .addEventListener(
+        "click",
+        closeMenu
+    );
+
+
+overlay.addEventListener(
+    "click",
+    closeMenu
+);
+
+
+document
+    .querySelectorAll(".menu-item")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                changePage(
+                    button.dataset.page
+                );
+
+            }
+        );
+
+    });
+
+
+/* =====================================
+   初期化
+===================================== */
+
+createStudyCards();
+
+showMistakes();
+
+</script>
+
+</body>
+</html>
